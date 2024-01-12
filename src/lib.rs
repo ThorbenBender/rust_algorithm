@@ -1,15 +1,17 @@
 fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {
-    use std::collections::HashMap;
+    let mut nums = nums.into_iter().enumerate().collect::<Vec<(usize, i32)>>();
 
-    let mut m: HashMap<i32, i32> = HashMap::new();
+    nums.sort_unstable_by_key(|&(_, n)| n);
 
-    for (i, num) in nums.iter().enumerate() {
-        match m.get(&(target - *num)) {
-            Some(&ix) => return vec![ix, i as i32],
-            None => m.insert(*num, i as i32),
-        };
+    for (k, (i, ni)) in nums.iter().enumerate() {
+        match nums[k + 1..].binary_search_by_key(&(target - ni), |&(_, nj)| nj) {
+            Ok(jj) => return vec![*i as i32, nums[jj + k + 1].0 as i32],
+            Err(_) => {}
+        }
     }
-    return vec![];
+
+    unreachable!("Error: this place should not be reachable");
+    return vec![0, 0];
 }
 
 #[cfg(test)]
