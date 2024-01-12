@@ -1,33 +1,38 @@
-fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {
-    let mut nums = nums.into_iter().enumerate().collect::<Vec<(usize, i32)>>();
-
-    nums.sort();
-
-    let (mut left, mut right) = (0, nums.len() - 1);
-
-    while left < right {
-        let sum = nums[left].1 + nums[right].1;
-
-        if sum == target {
-            return vec![nums[left].0 as i32, nums[right].0 as i32];
-        } else if sum > target {
-            right -= 1;
+fn roman_to_int(s: String) -> i32 {
+    let mut previos_worth: i32 = get_int(s.chars().next().unwrap());
+    s.chars().fold(0, |number, c| {
+        let current_worth = get_int(c);
+        let calculated_worth = if current_worth > previos_worth {
+            current_worth - previos_worth * 2
         } else {
-            left += 1;
-        }
-    }
+            current_worth
+        };
+        previos_worth = current_worth;
+        number + calculated_worth
+    })
+}
 
-    return vec![0, 0];
+fn get_int(c: char) -> i32 {
+    match c {
+        'I' => 1,
+        'V' => 5,
+        'X' => 10,
+        'L' => 50,
+        'C' => 100,
+        'D' => 500,
+        'M' => 1000,
+        _ => 0,
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::two_sum;
+    use crate::roman_to_int;
     #[test]
     pub fn test_two_sum() {
-        let numbers = vec![2, 7, 11, 15];
-        let target = 9;
-        let result = two_sum(numbers, target);
-        assert_eq!(result, vec![0, 1]);
+        let input = String::from("MCMXCIV");
+        let expected = 1994;
+        let result = roman_to_int(input);
+        assert_eq!(result, expected);
     }
 }
